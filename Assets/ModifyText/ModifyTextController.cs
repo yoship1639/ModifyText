@@ -184,19 +184,26 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
                 vs.Add(vertices[chars[i].vertIndex * 6 + c]);
         }
 
+
+
         Vector3 startPos = vs[0].position;
-        float h = (vs[0].position.y - vs[2].position.y) + LineSpacing;
+        float h = LineSpacing;
+        float ave = 0.0f;
+        int aveCount = 0;
         float nowX = startPos.x;
         int vertical = 0;
         for (var i = 0; i < chars.Count; i++)
         {
             Vector3 pivot = vs[i * 6].position;
             var w = vs[i * 6 + 1].position.x - vs[i * 6 + 0].position.x;
+            ave += Mathf.Abs(vs[i * 6 + 1].position.y - vs[i * 6 + 2].position.y);
+            aveCount++;
             for (int c = 0; c < 6; c++)
             {
                 var v = vs[i * 6 + c];
                 var dt = vs[i * 6 + c].position - pivot;
-                v.position = dt + new Vector3(nowX, startPos.y - h * vertical, 0.0f);
+                var dh = startPos.y - pivot.y;
+                v.position = dt + new Vector3(nowX, startPos.y - dh - h * vertical, 0.0f);
                 vs[i * 6 + c] = v;
             }
 
@@ -207,7 +214,10 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
             else
             {
                 vertical++;
-                nowX = vs[0].position.x;
+                nowX = startPos.x;
+                h = LineSpacing;
+                ave = 0.0f;
+                aveCount = 0;
             }
         }
 
