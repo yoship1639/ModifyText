@@ -7,7 +7,7 @@ using System;
 using UnityEditor;
 
 [AddComponentMenu("UI/Effects/Custom/ModifyText")]
-public class ModifyTextController : BaseMeshEffect, IMeshModifier
+public class ModifyTextController : BaseMeshEffect
 {
     public float Interval = 0.06f;
     public float TextSpeed = 20.0f;
@@ -37,6 +37,7 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
         public Vector3 scale;
         public Color32 color;
         public bool colorful;
+        public float rot;
     }
 
     public event EventHandler TextFinished = delegate { };
@@ -82,6 +83,7 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
         Color color = text.color;
         bool colorful = false;
         var scale = Vector3.one;
+        var rot = 0.0f;
 
         var chars = new List<Char>();
         for (var i = 0; i < src.Length; i++)
@@ -132,11 +134,19 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
                 }
                 else if (tag.Contains("-scalex"))
                 {
-                    scale = Vector3.one;
+                    scale = new Vector3(1.0f, scale.y, scale.z);
                 }
                 else if (tag.Contains("scalex"))
                 {
-                    scale = Vector3.one * float.Parse(re.Replace(tag, ""));
+                    scale = new Vector3(float.Parse(re.Replace(tag, "")), scale.y, scale.z);
+                }
+                else if (tag.Contains("-scaley"))
+                {
+                    scale = new Vector3(scale.x, 1.0f, scale.z);
+                }
+                else if (tag.Contains("scaley"))
+                {
+                    scale = new Vector3(scale.x, float.Parse(re.Replace(tag, "")), scale.z);
                 }
                 else if (tag.Contains("-scale"))
                 {
@@ -145,6 +155,14 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
                 else if (tag.Contains("scale"))
                 {
                     scale = Vector3.one * float.Parse(re.Replace(tag, ""));
+                }
+                else if (tag.Contains("-rot"))
+                {
+                    rot = 0.0f;
+                }
+                else if (tag.Contains("rot"))
+                {
+                    rot = float.Parse(re.Replace(tag, ""));
                 }
                 else if (tag.Contains("defcolor"))
                 {
@@ -158,6 +176,7 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
                     color = text.color;
                     colorful = false;
                     scale = Vector3.one;
+                    rot = 0.0f;
                 }
 
                 if (i >= src.Length) break;
@@ -174,6 +193,7 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
                 color = color,
                 scale = scale,
                 colorful = colorful,
+                rot = rot,
             });
         }
 
@@ -259,6 +279,19 @@ public class ModifyTextController : BaseMeshEffect, IMeshModifier
                     var vert = vertices[c + i * 6];
                     vert.position.x = Mathf.LerpUnclamped(center.x, vert.position.x, chars[i].scale.x);
                     vert.position.y = Mathf.LerpUnclamped(center.y, vert.position.y, chars[i].scale.y);
+                    vertices[c + i * 6] = vert;
+                }
+            }
+            else if (chars[i].rot != 0.0f)
+            {
+                var center = vertices[i * 6 + 0].position + vertices[i * 6 + 1].position + vertices[i * 6 + 2].position + vertices[i * 6 + 4].position;
+                center /= 4.0f;
+                for (int c = 0; c < 6; c++)
+                {
+                    var vert = vertices[c + i * 6];
+                    vert.position -= center;
+                    vert.position = Quaternion.FromToRotation(Vector3.up, new Vector3(Mathf.Sin(-0.25f * i + Time.time * chars[i].rot), Mathf.Cos(-0.25f * i + Time.time * chars[i].rot))) * vert.position;
+                    vert.position += center;
                     vertices[c + i * 6] = vert;
                 }
             }
