@@ -17,6 +17,8 @@
 ![ucvqp-bbqao](https://user-images.githubusercontent.com/8346139/50259624-32537f00-0448-11e9-99f0-8d3046d1f377.gif)
 #### サイズ変更
 ![030](https://user-images.githubusercontent.com/8346139/50259634-37b0c980-0448-11e9-92a8-3e8acb68e125.png)
+#### 回転
+![dvzf8-xokgs](https://user-images.githubusercontent.com/8346139/50321908-609f9000-0516-11e9-9486-9a14d7f9ec06.gif)
 
 
 
