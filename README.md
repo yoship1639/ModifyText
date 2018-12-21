@@ -19,6 +19,8 @@
 ![030](https://user-images.githubusercontent.com/8346139/50259634-37b0c980-0448-11e9-92a8-3e8acb68e125.png)
 #### 回転
 ![dvzf8-xokgs](https://user-images.githubusercontent.com/8346139/50321908-609f9000-0516-11e9-9486-9a14d7f9ec06.gif)
+#### ランダム
+![cyy8l-94rin](https://user-images.githubusercontent.com/8346139/50322775-06083300-051a-11e9-859d-0d6b5286d626.gif)
 
 
 
