@@ -38,6 +38,7 @@ public class ModifyTextController : BaseMeshEffect
         public Color32 color;
         public bool colorful;
         public float rot;
+        public float random;
     }
 
     public event EventHandler TextFinished = delegate { };
@@ -84,6 +85,7 @@ public class ModifyTextController : BaseMeshEffect
         bool colorful = false;
         var scale = Vector3.one;
         var rot = 0.0f;
+        var rand = 0.0f;
 
         var chars = new List<Char>();
         for (var i = 0; i < src.Length; i++)
@@ -164,6 +166,14 @@ public class ModifyTextController : BaseMeshEffect
                 {
                     rot = float.Parse(re.Replace(tag, ""));
                 }
+                else if (tag.Contains("-random"))
+                {
+                    rand = 0.0f;
+                }
+                else if (tag.Contains("random"))
+                {
+                    rand = float.Parse(re.Replace(tag, ""));
+                }
                 else if (tag.Contains("defcolor"))
                 {
                     color = text.color;
@@ -177,6 +187,7 @@ public class ModifyTextController : BaseMeshEffect
                     colorful = false;
                     scale = Vector3.one;
                     rot = 0.0f;
+                    rand = 0.0f;
                 }
 
                 if (i >= src.Length) break;
@@ -194,6 +205,7 @@ public class ModifyTextController : BaseMeshEffect
                 scale = scale,
                 colorful = colorful,
                 rot = rot,
+                random = rand,
             });
         }
 
@@ -292,6 +304,24 @@ public class ModifyTextController : BaseMeshEffect
                     vert.position -= center;
                     vert.position = Quaternion.FromToRotation(Vector3.up, new Vector3(Mathf.Sin(-0.25f * i + Time.time * chars[i].rot), Mathf.Cos(-0.25f * i + Time.time * chars[i].rot))) * vert.position;
                     vert.position += center;
+                    vertices[c + i * 6] = vert;
+                }
+            }
+            if (chars[i].random != 0.0f)
+            {
+                var rands = new Vector3[6];
+                var r = chars[i].random;
+                for (var c = 0; c < 6; c++)
+                {
+                    var rad = UnityEngine.Random.Range(0, 360) * Mathf.Deg2Rad;
+                    rands[c] = new Vector3(r * Mathf.Cos(rad), r * Mathf.Sin(rad));
+                }
+                rands[3] = rands[2];
+                rands[5] = rands[0];
+                for (int c = 0; c < 6; c++)
+                {
+                    var vert = vertices[c + i * 6];
+                    vert.position += rands[c];
                     vertices[c + i * 6] = vert;
                 }
             }
