@@ -256,21 +256,21 @@ public class ModifyTextController : BaseMeshEffect
             if (chars[i].shakeRadius > 0.0f)
             {
                 float rad = UnityEngine.Random.Range(0, 360) * Mathf.Deg2Rad;
-                dir = new Vector3(chars[i].shakeRadius * Mathf.Cos(rad), chars[i].shakeRadius * Mathf.Sin(rad), 0);
+                dir += new Vector3(chars[i].shakeRadius * Mathf.Cos(rad), chars[i].shakeRadius * Mathf.Sin(rad), 0);
             }
-            else if (chars[i].waveDist > 0.0f)
+            if (chars[i].waveDist > 0.0f)
             {
-                dir = new Vector3(0, chars[i].waveDist * Mathf.Sin(i + Time.time * WaveSpeed), 0);
+                dir += new Vector3(0, chars[i].waveDist * Mathf.Sin(i + Time.time * WaveSpeed), 0);
             }
-            else if (chars[i].circleRadius > 0.0f)
+            if (chars[i].circleRadius > 0.0f)
             {
-                dir = new Vector3(chars[i].circleRadius * Mathf.Cos(i + Time.time * CircleSpeed), chars[i].circleRadius * Mathf.Sin(i + Time.time * CircleSpeed), 0);
+                dir += new Vector3(chars[i].circleRadius * Mathf.Cos(i + Time.time * CircleSpeed), chars[i].circleRadius * Mathf.Sin(i + Time.time * CircleSpeed), 0);
             }
-            else if (chars[i].colorful)
+            if (chars[i].colorful)
             {
                 color = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
             }
-            else if (chars[i].scale != Vector3.one)
+            if (chars[i].scale != Vector3.one)
             {
                 var center = vertices[i * 6 + 0].position + vertices[i * 6 + 1].position + vertices[i * 6 + 2].position + vertices[i * 6 + 4].position;
                 center /= 4.0f;
@@ -282,7 +282,7 @@ public class ModifyTextController : BaseMeshEffect
                     vertices[c + i * 6] = vert;
                 }
             }
-            else if (chars[i].rot != 0.0f)
+            if (chars[i].rot != 0.0f)
             {
                 var center = vertices[i * 6 + 0].position + vertices[i * 6 + 1].position + vertices[i * 6 + 2].position + vertices[i * 6 + 4].position;
                 center /= 4.0f;
