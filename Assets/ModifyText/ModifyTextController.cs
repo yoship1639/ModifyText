@@ -39,6 +39,7 @@ public class ModifyTextController : BaseMeshEffect
         public bool colorful;
         public float rot;
         public float random;
+        public float randscale;
     }
 
     public event EventHandler TextFinished = delegate { };
@@ -86,6 +87,7 @@ public class ModifyTextController : BaseMeshEffect
         var scale = Vector3.one;
         var rot = 0.0f;
         var rand = 0.0f;
+        var randscale = 0.0f;
 
         var chars = new List<Char>();
         for (var i = 0; i < src.Length; i++)
@@ -133,6 +135,14 @@ public class ModifyTextController : BaseMeshEffect
                 else if (tag.Contains("colorful"))
                 {
                     colorful = true;
+                }
+                else if (tag.Contains("-randscale"))
+                {
+                    randscale = 0.0f;
+                }
+                else if (tag.Contains("randscale"))
+                {
+                    randscale = float.Parse(re.Replace(tag, ""));
                 }
                 else if (tag.Contains("-scalex"))
                 {
@@ -188,6 +198,7 @@ public class ModifyTextController : BaseMeshEffect
                     scale = Vector3.one;
                     rot = 0.0f;
                     rand = 0.0f;
+                    randscale = 0.0f;
                 }
 
                 if (i >= src.Length) break;
@@ -206,36 +217,29 @@ public class ModifyTextController : BaseMeshEffect
                 colorful = colorful,
                 rot = rot,
                 random = rand,
+                randscale = randscale,
             });
         }
 
         var vs = new List<UIVertex>();
         for (var i = 0; i < chars.Count; i++)
         {
-            for (int c = 0; c < 6; c++)
-                vs.Add(vertices[chars[i].vertIndex * 6 + c]);
+            for (int c = 0; c < 6; c++) vs.Add(vertices[chars[i].vertIndex * 6 + c]);
         }
 
-
-
         Vector3 startPos = vs[0].position;
-        float h = LineSpacing;
-        float ave = 0.0f;
-        int aveCount = 0;
         float nowX = startPos.x;
         int vertical = 0;
         for (var i = 0; i < chars.Count; i++)
         {
             Vector3 pivot = vs[i * 6].position;
             var w = vs[i * 6 + 1].position.x - vs[i * 6 + 0].position.x;
-            ave += Mathf.Abs(vs[i * 6 + 1].position.y - vs[i * 6 + 2].position.y);
-            aveCount++;
             for (int c = 0; c < 6; c++)
             {
                 var v = vs[i * 6 + c];
                 var dt = vs[i * 6 + c].position - pivot;
                 var dh = startPos.y - pivot.y;
-                v.position = dt + new Vector3(nowX, startPos.y - dh - h * vertical, 0.0f);
+                v.position = dt + new Vector3(nowX, startPos.y - dh - LineSpacing * vertical, 0.0f);
                 vs[i * 6 + c] = v;
             }
 
@@ -247,9 +251,6 @@ public class ModifyTextController : BaseMeshEffect
             {
                 vertical++;
                 nowX = startPos.x;
-                h = LineSpacing;
-                ave = 0.0f;
-                aveCount = 0;
             }
         }
 
@@ -322,6 +323,19 @@ public class ModifyTextController : BaseMeshEffect
                 {
                     var vert = vertices[c + i * 6];
                     vert.position += rands[c];
+                    vertices[c + i * 6] = vert;
+                }
+            }
+            if (chars[i].randscale != 0.0f)
+            {
+                var center = vertices[i * 6 + 0].position + vertices[i * 6 + 1].position + vertices[i * 6 + 2].position + vertices[i * 6 + 4].position;
+                center /= 4.0f;
+                var r = (UnityEngine.Random.value * 2.0f - 1.0f) * chars[i].randscale;
+                for (int c = 0; c < 6; c++)
+                {
+                    var vert = vertices[c + i * 6];
+                    var d = (vert.position - center).normalized * r;
+                    vert.position += d;
                     vertices[c + i * 6] = vert;
                 }
             }
