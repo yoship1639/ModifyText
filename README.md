@@ -21,6 +21,8 @@
 ![dvzf8-xokgs](https://user-images.githubusercontent.com/8346139/50321908-609f9000-0516-11e9-9486-9a14d7f9ec06.gif)
 #### ランダム
 ![cyy8l-94rin](https://user-images.githubusercontent.com/8346139/50322775-06083300-051a-11e9-859d-0d6b5286d626.gif)
+#### ホラー
+![56fyp-50ahn](https://user-images.githubusercontent.com/8346139/50369764-dde20800-05dd-11e9-8e36-50453004bb10.gif)
 
 
 
