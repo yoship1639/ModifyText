@@ -19,7 +19,8 @@ public class ModifyTextController : BaseMeshEffect
     public bool isEnd = false;
 
 
-    float time = 0;
+    float time = 0.0f;
+    float totaltime = 0.0f;
     int charCount;
     float alpha;
 
@@ -40,6 +41,8 @@ public class ModifyTextController : BaseMeshEffect
         public float rot;
         public float random;
         public float randscale;
+        public float small;
+        public float fadeout;
     }
 
     public event EventHandler TextFinished = delegate { };
@@ -54,6 +57,7 @@ public class ModifyTextController : BaseMeshEffect
     public void Init()
     {
         time = 0.0f;
+        totaltime = 0.0f;
         charCount = 0;
         isEnd = false;
     }
@@ -76,7 +80,7 @@ public class ModifyTextController : BaseMeshEffect
         vh.AddUIVertexTriangleStream(vertices);
     }
 
-    static Regex re = new Regex(@"[^0-9.f]");
+    static Regex re = new Regex(@"[^0-9.]");
     Char[] ExtractText(string src, ref List<UIVertex> vertices)
     {
         float shakeRadius = 0.0f;
@@ -88,6 +92,8 @@ public class ModifyTextController : BaseMeshEffect
         var rot = 0.0f;
         var rand = 0.0f;
         var randscale = 0.0f;
+        var small = 0.0f;
+        var fadeout = 0.0f;
 
         var chars = new List<Char>();
         for (var i = 0; i < src.Length; i++)
@@ -184,6 +190,22 @@ public class ModifyTextController : BaseMeshEffect
                 {
                     rand = float.Parse(re.Replace(tag, ""));
                 }
+                else if (tag.Contains("-small"))
+                {
+                    small = 0.0f;
+                }
+                else if (tag.Contains("small"))
+                {
+                    small = float.Parse(re.Replace(tag, ""));
+                }
+                else if (tag.Contains("-fadeout"))
+                {
+                    fadeout = 0.0f;
+                }
+                else if (tag.Contains("fadeout"))
+                {
+                    fadeout = float.Parse(re.Replace(tag, ""));
+                }
                 else if (tag.Contains("defcolor"))
                 {
                     color = text.color;
@@ -199,6 +221,8 @@ public class ModifyTextController : BaseMeshEffect
                     rot = 0.0f;
                     rand = 0.0f;
                     randscale = 0.0f;
+                    small = 0.0f;
+                    fadeout = 0.0f;
                 }
 
                 if (i >= src.Length) break;
@@ -218,6 +242,8 @@ public class ModifyTextController : BaseMeshEffect
                 rot = rot,
                 random = rand,
                 randscale = randscale,
+                small = small,
+                fadeout = fadeout,
             });
         }
 
@@ -339,6 +365,30 @@ public class ModifyTextController : BaseMeshEffect
                     vertices[c + i * 6] = vert;
                 }
             }
+            if (chars[i].small != 0.0f)
+            {
+                var center = vertices[i * 6 + 0].position + vertices[i * 6 + 1].position + vertices[i * 6 + 2].position + vertices[i * 6 + 4].position;
+                center /= 4.0f;
+                var s = (chars[i].small + 1.0f + i * Interval) - totaltime;
+                for (int c = 0; c < 6; c++)
+                {
+                    var vert = vertices[c + i * 6];
+                    vert.position = Vector3.Lerp(center, vert.position, s);
+                    vertices[c + i * 6] = vert;
+                }
+            }
+            if (chars[i].fadeout != 0.0f)
+            {
+                var center = vertices[i * 6 + 0].position + vertices[i * 6 + 1].position + vertices[i * 6 + 2].position + vertices[i * 6 + 4].position;
+                center /= 4.0f;
+                var a = (chars[i].fadeout + 1.0f + i * Interval) - totaltime;
+                for (int c = 0; c < 6; c++)
+                {
+                    var vert = vertices[c + i * 6];
+                    color.a = Mathf.Clamp01(a);
+                    vertices[c + i * 6] = vert;
+                }
+            }
 
             for (int c = 0; c < 6; c++)
             {
@@ -392,6 +442,7 @@ public class ModifyTextController : BaseMeshEffect
 
         srcText = text.text;
         time += Time.deltaTime;
+        totaltime += Time.deltaTime;
         if (time >= Interval)
         {
             time -= Interval;
