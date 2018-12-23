@@ -23,7 +23,10 @@
 ![cyy8l-94rin](https://user-images.githubusercontent.com/8346139/50322775-06083300-051a-11e9-859d-0d6b5286d626.gif)
 #### ホラー
 ![56fyp-50ahn](https://user-images.githubusercontent.com/8346139/50369764-dde20800-05dd-11e9-8e36-50453004bb10.gif)
-
+#### 小さくなる
+![hhe9x-g8gdp](https://user-images.githubusercontent.com/8346139/50380942-dfcec880-06bc-11e9-8643-a088e8c70815.gif)
+#### フェードアウト
+![lbkag-ushnr](https://user-images.githubusercontent.com/8346139/50380945-e2c9b900-06bc-11e9-85ec-bbd48a8da191.gif)
 
 
 
