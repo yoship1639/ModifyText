@@ -43,6 +43,7 @@ public class ModifyTextController : BaseMeshEffect
         public float randscale;
         public float small;
         public float fadeout;
+        public bool fadein;
     }
 
     public event EventHandler TextFinished = delegate { };
@@ -94,6 +95,7 @@ public class ModifyTextController : BaseMeshEffect
         var randscale = 0.0f;
         var small = 0.0f;
         var fadeout = 0.0f;
+        var fadein = false;
 
         var chars = new List<Char>();
         for (var i = 0; i < src.Length; i++)
@@ -198,6 +200,14 @@ public class ModifyTextController : BaseMeshEffect
                 {
                     small = float.Parse(re.Replace(tag, ""));
                 }
+                else if (tag.Contains("-fadein"))
+                {
+                    fadein = false;
+                }
+                else if (tag.Contains("fadein"))
+                {
+                    fadein = true;
+                }
                 else if (tag.Contains("-fadeout"))
                 {
                     fadeout = 0.0f;
@@ -223,6 +233,7 @@ public class ModifyTextController : BaseMeshEffect
                     randscale = 0.0f;
                     small = 0.0f;
                     fadeout = 0.0f;
+                    fadein = false;
                 }
 
                 if (i >= src.Length) break;
@@ -244,6 +255,7 @@ public class ModifyTextController : BaseMeshEffect
                 randscale = randscale,
                 small = small,
                 fadeout = fadeout,
+                fadein = fadein,
             });
         }
 
@@ -253,7 +265,7 @@ public class ModifyTextController : BaseMeshEffect
             for (int c = 0; c < 6; c++) vs.Add(vertices[chars[i].vertIndex * 6 + c]);
         }
 
-        Vector3 startPos = vs[0].position;
+        Vector3 startPos = vertices[0].position;
         float nowX = startPos.x;
         int vertical = 0;
         for (var i = 0; i < chars.Count; i++)
@@ -389,6 +401,21 @@ public class ModifyTextController : BaseMeshEffect
                     vertices[c + i * 6] = vert;
                 }
             }
+            if (chars[i].fadein)
+            {
+                var center = vertices[i * 6 + 0].position + vertices[i * 6 + 1].position + vertices[i * 6 + 2].position + vertices[i * 6 + 4].position;
+                center /= 4.0f;
+                var a = totaltime - (i * Interval);
+                if (a <= 1.0f)
+                {
+                    for (int c = 0; c < 6; c++)
+                    {
+                        var vert = vertices[c + i * 6];
+                        color.a = Mathf.Clamp01(a);
+                        vertices[c + i * 6] = vert;
+                    }
+                }
+            }
 
             for (int c = 0; c < 6; c++)
             {
@@ -422,7 +449,7 @@ public class ModifyTextController : BaseMeshEffect
         for (int i = vertexTop; i < vertexTop + 6; ++i)
         {
             var uiVertex = vertices[i];
-            uiVertex.color.a = (byte)(255f * alpha);
+            if (uiVertex.color.a == 255) uiVertex.color.a = (byte)(255f * alpha);
             output.Add(uiVertex);
         }
 
