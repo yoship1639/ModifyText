@@ -44,6 +44,7 @@ public class ModifyTextController : BaseMeshEffect
         public float small;
         public float fadeout;
         public bool fadein;
+        public float flash;
     }
 
     public event EventHandler TextFinished = delegate { };
@@ -96,6 +97,7 @@ public class ModifyTextController : BaseMeshEffect
         var small = 0.0f;
         var fadeout = 0.0f;
         var fadein = false;
+        var flash = 0.0f;
 
         var chars = new List<Char>();
         for (var i = 0; i < src.Length; i++)
@@ -216,6 +218,14 @@ public class ModifyTextController : BaseMeshEffect
                 {
                     fadeout = float.Parse(re.Replace(tag, ""));
                 }
+                else if (tag.Contains("-flash"))
+                {
+                    flash = 0.0f;
+                }
+                else if (tag.Contains("flash"))
+                {
+                    flash = float.Parse(re.Replace(tag, ""));
+                }
                 else if (tag.Contains("defcolor"))
                 {
                     color = text.color;
@@ -234,6 +244,7 @@ public class ModifyTextController : BaseMeshEffect
                     small = 0.0f;
                     fadeout = 0.0f;
                     fadein = false;
+                    flash = 0.0f;
                 }
 
                 if (i >= src.Length) break;
@@ -256,6 +267,7 @@ public class ModifyTextController : BaseMeshEffect
                 small = small,
                 fadeout = fadeout,
                 fadein = fadein,
+                flash = flash,
             });
         }
 
@@ -414,6 +426,16 @@ public class ModifyTextController : BaseMeshEffect
                         color.a = Mathf.Clamp01(a);
                         vertices[c + i * 6] = vert;
                     }
+                }
+            }
+            if (chars[i].flash > 0.0f)
+            {
+                var flash = (Time.time % chars[i].flash * 2.0f) > chars[i].flash ? true : false;
+                for (int c = 0; c < 6; c++)
+                {
+                    var vert = vertices[c + i * 6];
+                    color.a = flash ? (byte)255 : (byte)0;
+                    vertices[c + i * 6] = vert;
                 }
             }
 
